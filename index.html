@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRAFTED CONNECTIONS</title>
+  <link rel="stylesheet" href="new.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+</head>
+<body>
+  <header>
+    <a href="#" class="logo">CRAFTED <span>CONNECTIONS.</span></a>
+    <div class="bx bx-menu" id="menu-icon"></div>
+    <ul class="navbar">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="categories.html">Categories</a></li>
+    
+      <li><a href="about.html">About</a></li>
+   
+      <li id="auth-buttons">
+        <a href="#" onclick="showAuthModal()" id="auth-action-btn">Sign In</a>
+      </li>
+      <li id="admin-login-menu">
+        <a href="add-product.html">Admin</a>
+      </li>
+
+      <li id="user-menu" style="display: none;">
+        <div class="user-dropdown">
+          <a href="#" id="username-display"></a>
+          <div class="dropdown-content">
+            <a href="#" onclick="showOrders()">My Orders</a>
+            <a href="#" onclick="logout()">Logout</a>
+          </div>
+        </div>
+      </li>
+      <li id="cart-icon">
+        <a href="#" onclick="showCart()">
+          <i class='bx bx-cart'></i>
+          <span id="cart-count">0</span>
+        </a>
+      </li>
+    </ul>
+  </header>
+
+  
+  <section class="home" id="home">
+    <div class="ho1">
+      <div class="home-text">
+        <h1><span>Your</span>  Comfort <br />Is Our <span>Happiness</span></h1>
+        <p>Here we find the best of the best for you within your vicinity.</p>
+        <a href="#" onclick="showAuthModal()" class="btn" id="hero-signin-btn">Sign In</a>
+        <a href="#shop" class="btn" id="shop-now-btn">Shop Now</a>
+      </div>
+      <div class="ima">
+        <img src="./Screenshot 2024-09-06 054254.png" alt="Hero Image" width="100%" height="500" />
+      </div>
+    </div>
+  </section>
+
+    <section class="shop" id="shop">
+    <div class="heading">
+      <span>Top Categories</span>
+      <h2>Shop Now</h2>
+    </div>
+    <div class="shop-container">
+      <!-- Category boxes will load here dynamically -->
+    </div>
+  </section>
+<!-- Trending Stores Section -->
+<section class="shop" id="trending-stores" style="margin-top: 60px;">
+  <div class="heading">
+    <span>Trending Stores</span>
+    <h2>Best In Market</h2>
+  </div>
+
+  <div class="new-container">
+    <!-- Box 1 -->
+    <div class="box">
+      <div class="box-img">
+        <a href="https://www.google.com/maps/dir//Wooden+Street...">
+          <img src="https://lh3.googleusercontent.com/p/AF1QipM7I8rJ_cnprJAMD69aDb-OcUwwf5K6ZTVjdBA3=s1360-w1360-h1020" alt="Wooden Street">
+        </a>
+      </div>
+      <div class="title-price">
+        <h3>Wooden Street</h3>
+      </div>
+    </div>
+
+    <!-- Box 2 -->
+    <div class="box">
+      <div class="box-img">
+        <a href="https://www.google.com/maps/place/Aakruti+Furnishers...">
+          <img src="https://lh3.googleusercontent.com/p/AF1QipPNIfEZ1fn4u811Fg7lKKI7qPkgUuWBrKMI6sO6=s1360-w1360-h1020" alt="Aakruti Furnishers">
+        </a>
+      </div>
+      <div class="title-price">
+        <h3>Aakruti Furnishers & Decorators</h3>
+      </div>
+    </div>
+
+    <!-- Box 3 -->
+    <div class="box">
+      <div class="box-img">
+        <a href="https://www.google.com/maps/dir//11,+HINDUSTAN+FURNITURE...">
+          <img src="https://lh5.googleusercontent.com/p/AF1QipPJMnBM0zfp5YgEr-uS7XEGptiPcaMaWP2YRuOC=w260-h175-n-k-no" alt="Hindustan Furniture">
+        </a>
+      </div>
+      <div class="title-price">
+        <h3>HINDUSTAN FURNITURE</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  
+  <section class="footer">
+    <div class="footer-box">
+      <h3>Services</h3>
+      <li><a href="#">Product</a></li>
+      <li><a href="#">Help & Support</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">FAQ</a></li>
+    </div>
+    <div class="footer-box contact-info">
+      <h3>Contact</h3>
+      <span>Vadodara, Gujarat, India</span>
+      <span>craftedconnections@gmail.com</span>
+    </div>
+  </section>
+
+  <!-- Cart Modal -->
+  <div id="cart-modal" class="modal">
+    <div class="modal-content cart-modal-content">
+      <button class="close" onclick="closeCartModal()">×</button>
+      <h2>Shopping Cart</h2>
+      <div id="cart-items"></div>
+      <div class="cart-footer">
+        <div id="cart-total">Total: ₹0</div>
+        <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+        <button class="pay-btn" onclick="payNow()">Pay Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders Modal -->
+  <div id="orders-modal" class="modal"></div>
+
+  <!-- JS -->
+   <script>
+    // Only load categories on homepage
+    document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('/api/products');
+    const products = await res.json();
+
+    const categoriesMap = new Map();
+    products.forEach(p => {
+      if (!categoriesMap.has(p.category)) {
+        categoriesMap.set(p.category, p); // Store one product per category
+      }
+    });
+
+    const container = document.querySelector('.shop-container');
+    container.innerHTML = ''; // Clear if needed
+
+    // Display categories as cards
+    categoriesMap.forEach((product, category) => {
+      const box = document.createElement('div');
+      box.className = 'box';
+      box.innerHTML = `
+        <div class="box-img">
+          <img src="${product.imageUrl}" alt="${category}" />
+        </div>
+        <div class="title-price">
+          <h3>${category}</h3>
+        </div>
+      `;
+      box.onclick = () => showCategoryProducts(products, category);
+      container.appendChild(box);
+    });
+  } catch (err) {
+    console.error('Error loading categories:', err);
+  }
+});
+
+function showCategoryProducts(products, selectedCategory) {
+  const container = document.querySelector('.shop-container');
+  const heading = document.querySelector('.heading');
+  
+  heading.innerHTML = `
+    <span>${selectedCategory}</span>
+    <h2>Products</h2>
+    <button onclick="window.location.reload()" style="margin-top:10px;" class="btn">Back to Categories</button>
+  `;
+
+  const filtered = products.filter(p => p.category === selectedCategory);
+  container.innerHTML = '';
+
+  filtered.forEach(product => {
+    const box = document.createElement('div');
+    box.className = 'box';
+    box.innerHTML = `
+      <div class="box-img" style="cursor:pointer;">
+        <img src="${product.imageUrl}" alt="${product.name}" />
+      </div>
+      <div class="title-price">
+        <h3 style="cursor:pointer;">${product.name}</h3>
+        <div class="stars">${generateStars(product.rating)}</div>
+        <span class="price">₹${product.price}</span>
+      </div>
+      <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})" class="cart-btn">
+        <i class='bx bx-cart'></i>
+      </button>
+    `;
+
+    // Add click listeners to redirect to product detail page
+    box.querySelector('.box-img').addEventListener('click', () => {
+      window.location.href = `product.html?id=${product.id}`;
+    });
+    box.querySelector('.title-price h3').addEventListener('click', () => {
+      window.location.href = `product.html?id=${product.id}`;
+    });
+
+    container.appendChild(box);
+  });
+}
+
+
+function generateStars(rating) {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+  let stars = '';
+
+  for (let i = 0; i < fullStars; i++) {
+    stars += '<i class="bx bxs-star"></i>';
+  }
+  if (hasHalfStar) {
+    stars += '<i class="bx bxs-star-half"></i>';
+  }
+  const emptyStars = 5 - Math.ceil(rating);
+  for (let i = 0; i < emptyStars; i++) {
+    stars += '<i class="bx bx-star"></i>';
+  }
+
+  return stars;
+}
+
+  </script>
+  
+  <script src="new.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us - CRAFTED CONNECTIONS</title>
+  <link rel="stylesheet" href="new.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <a href="index.html" class="logo">CRAFTED <span>CONNECTIONS.</span></a>
+    <ul class="navbar">
+       <li><a href="index.html#home">Home</a></li>
+      <li><a href="categories.html">Categories</a></li>
+      <li><a href="about.html">About</a></li>
+      
+
+      <li id="user-menu" style="display: none;">
+        <div class="user-dropdown">
+          <a href="#" id="username-display"></a>
+          <div class="dropdown-content">
+            <a href="#" onclick="showOrders()">My Orders</a>
+            <a href="#" onclick="logout()">Logout</a>
+          </div>
+        </div>
+      </li>
+      <li id="cart-icon">
+        <a href="#" onclick="showCart()">
+          <i class='bx bx-cart'></i>
+          <span id="cart-count">0</span>
+        </a>
+      </li>
+    </ul>
+  </header>
+
+  <!-- About Section -->
+  <section class="about-section" style="margin-top: 10px;">
+   
+    <div class="cc">
+      <div class="about-text">
+       
+        <h2>Furniture is an important part of comfort</h2>
+        <p>At CRAFTED CONNECTIONS we bridge the gap between local home decor furniture stores and customers seeking unique, handcrafted pieces. Our platform empowers small businesses by supporting the 'Vocal for Local' initiative, making it easier for you to discover and shop local treasures online.</p>
+        <p>We believe in bringing quality and sustainability to every home while boosting local artisans and communities. Join us in transforming your space with furniture that tells a story!</p>
+      </div>
+      <div class="craft">
+        <img src="./craftc.jpg" alt="Crafted Connections" style="max-width:100%; height:auto;" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <section class="footer">
+    <div class="footer-box">
+      <h3>Services</h3>
+      <li><a href="#">Product</a></li>
+      <li><a href="#">Help & Support</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">FAQ</a></li>
+    </div>
+    <div class="footer-box contact-info">
+      <h3>Contact</h3>
+      <span>Vadodara, Gujarat, India</span>
+      <span>craftedconnections@gmail.com</span>
+    </div>
+  </section>
+
+  <script src="new.js"></script>
+</body>
+</html>

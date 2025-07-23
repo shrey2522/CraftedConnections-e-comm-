@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+
+  <meta charset="UTF-8" />
+  <title>Categories - Crafted Connections</title>
+  <link rel="stylesheet" href="new.css" />
+  <style>
+    .categories-container, .products-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 20px;
+    }
+
+    .category-box, .product-box {
+      width: 220px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      text-align: center;
+    }
+
+    .category-box:hover, .product-box:hover {
+      transform: scale(1.05);
+    }
+
+    .category-box img, .product-box img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .controls {
+      text-align: center;
+      margin: 20px;
+    }
+
+    .controls input, .controls select {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+<header>
+    <a href="#" class="logo">CRAFTED <span>CONNECTIONS.</span></a>
+    <div class="bx bx-menu" id="menu-icon"></div>
+    <ul class="navbar">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="categories.html">Categories</a></li>
+      
+      <li><a href="about.html">About</a></li>
+   
+      <li id="auth-buttons">
+        <a href="#" onclick="showAuthModal()" id="auth-action-btn">Sign In</a>
+      </li>
+      <li id="user-menu" style="display: none;">
+        <div class="user-dropdown">
+          <a href="#" id="username-display"></a>
+          <div class="dropdown-content">
+            <a href="#" onclick="showOrders()">My Orders</a>
+            <a href="#" onclick="logout()">Logout</a>
+          </div>
+        </div>
+      </li>
+     
+    </ul>
+  </header>
+
+
+<!-- Search + Filter Controls -->
+<div class="controls" style="margin-top: 76px;">
+  <input type="text" id="searchInput" placeholder="Search categories or products..." oninput="handleSearch()" />
+  <select id="sortSelect" onchange="handleSort()">
+    <option value="">Sort by</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+    <option value="rating-desc">Rating: High to Low</option>
+  </select>
+</div>
+
+
+<!-- Categories -->
+<h1 style="text-align:center;  ">Browse Categories</h1>
+  <div id="categories" class="categories-container"></div>
+
+  <!-- Products -->
+  <h2 id="category-title" style="text-align:center; display:none;">Products</h2>
+  <div id="filtered-products" class="products-container"></div>
+<section class="footer">
+    <div class="footer-box">
+      <h3>Services</h3>
+      <li><a href="#">Product</a></li>
+      <li><a href="#">Help & Support</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">FAQ</a></li>
+    </div>
+    <div class="footer-box contact-info">
+      <h3>Contact</h3>
+      <span>Vadodara, Gujarat, India</span>
+      <span>craftedconnections@gmail.com</span>
+    </div>
+  </section>
+
+  <script>
+    let allProducts = [];
+    let filteredProducts = [];
+    let categories = new Set();
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/api/products');
+        const products = await res.json();
+        allProducts = products;
+        extractCategories(products);
+        displayCategories();
+        loadUserFromToken(); // load user for auth display
+      } catch (err) {
+        console.error('Failed to load products:', err);
+      }
+    });
+
+    function extractCategories(products) {
+      products.forEach(p => categories.add(p.category));
+    }
+
+    function displayCategories(filter = '') {
+      const container = document.getElementById('categories');
+      container.innerHTML = '';
+
+      categories.forEach(category => {
+        if (category.toLowerCase().includes(filter.toLowerCase())) {
+          const sampleImage = allProducts.find(p => p.category === category)?.imageUrl || 'default.jpg';
+
+          const box = document.createElement('div');
+          box.className = 'category-box';
+          box.onclick = () => filterProductsByCategory(category);
+          box.innerHTML = `
+            <img src="${sampleImage}" alt="${category}">
+            <h3>${category}</h3>
+          `;
+          container.appendChild(box);
+        }
+      });
+    }
+
+    function filterProductsByCategory(category) {
+      const title = document.getElementById('category-title');
+      title.style.display = 'block';
+      title.textContent = `Products in "${category}"`;
+
+      filteredProducts = allProducts.filter(p => p.category === category);
+      displayProducts(filteredProducts);
+    }
+
+    function displayProducts(products) {
+      const container = document.getElementById('filtered-products');
+      container.innerHTML = '';
+
+      if (products.length === 0) {
+        container.innerHTML = '<p>No products found.</p>';
+        return;
+      }
+
+      products.forEach(product => {
+        const box = document.createElement('div');
+        box.className = 'product-box';
+        box.onclick = () => window.location.href = `product.html?id=${product.id}`;
+        box.innerHTML = `
+          <img src="${product.imageUrl}" alt="${product.name}">
+          <h3>${product.name}</h3>
+          <p>₹${product.price}</p>
+          <div>${generateStars(product.rating)}</div>
+        `;
+        container.appendChild(box);
+      });
+    }
+
+    function generateStars(rating) {
+      const full = Math.floor(rating);
+      const half = rating % 1 >= 0.5;
+      let stars = '';
+      for (let i = 0; i < full; i++) stars += '⭐️';
+      if (half) stars += '✨';
+      return stars.padEnd(5, '☆');
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      if (!query) {
+        displayCategories(); // show all
+        return;
+      }
+
+      const categoryMatch = Array.from(categories).some(cat => cat.toLowerCase().includes(query));
+      if (categoryMatch) {
+        displayCategories(query);
+        document.getElementById('filtered-products').innerHTML = '';
+        document.getElementById('category-title').style.display = 'none';
+      } else {
+        const matched = allProducts.filter(p => p.name.toLowerCase().includes(query));
+        document.getElementById('category-title').style.display = 'block';
+        document.getElementById('category-title').textContent = `Search results for "${query}"`;
+        displayProducts(matched);
+      }
+    }
+
+    function handleSort() {
+      const type = document.getElementById('sortSelect').value;
+      if (!filteredProducts.length) return;
+
+      switch (type) {
+        case 'price-asc':
+          filteredProducts.sort((a, b) => a.price - b.price);
+          break;
+        case 'price-desc':
+          filteredProducts.sort((a, b) => b.price - a.price);
+          break;
+        case 'rating-desc':
+          filteredProducts.sort((a, b) => b.rating - a.rating);
+          break;
+      }
+
+      displayProducts(filteredProducts);
+    }
+
+    // Auth UI helper
+    function loadUserFromToken() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(user => {
+          if (user && user.name) {
+            document.getElementById('auth-buttons').style.display = 'none';
+            const userMenu = document.getElementById('user-menu');
+            userMenu.style.display = 'block';
+            document.getElementById('username-display').textContent = user.name;
+          }
+        });
+      } catch (e) {
+        localStorage.removeItem('token');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      location.reload();
+    }
+  </script>
+</body>
+</html>

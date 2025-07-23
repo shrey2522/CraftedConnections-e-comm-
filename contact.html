@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Store Locations - Crafted Connections</title>
+  <link rel="stylesheet" href="new.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 500px;
+      width: 90%;
+      margin: 40px auto;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+ <header>
+    <a href="#" class="logo">CRAFTED <span>CONNECTIONS.</span></a>
+    <div class="bx bx-menu" id="menu-icon"></div>
+    <ul class="navbar">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="categories.html">Categories</a></li>
+   
+      <li><a href="about.html">About</a></li>
+   
+      <li id="auth-buttons">
+        <a href="#" onclick="showAuthModal()" id="auth-action-btn">Sign In</a>
+      </li>
+      <li id="user-menu" style="display: none;">
+        <div class="user-dropdown">
+          <a href="#" id="username-display"></a>
+          <div class="dropdown-content">
+            <a href="#" onclick="showOrders()">My Orders</a>
+            <a href="#" onclick="logout()">Logout</a>
+          </div>
+        </div>
+      </li>
+      <li id="cart-icon">
+        <a href="#" onclick="showCart()">
+          <i class='bx bx-cart'></i>
+          <span id="cart-count">0</span>
+        </a>
+      </li>
+    </ul>
+  </header>
+
+  <!-- Map Section -->
+  <section style="text-align: center; padding-top: 80px;">
+    <h2>Local Store Locations</h2>
+    <div id="map"></div>
+  </section>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([22.3072, 73.1812], 13); // Vadodara center
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const stores = [
+      {
+        name: "Heritage Furniture",
+        lat: 22.3107,
+        lng: 73.1785,
+        info: "Handmade wooden decor, Alkapuri"
+      },
+      {
+        name: "Vadodara Crafts Hub",
+        lat: 22.3036,
+        lng: 73.1702,
+        info: "Artisan goods and ethnic furniture"
+      },
+      {
+        name: "Urban Living Studio",
+        lat: 22.3091,
+        lng: 73.1810,
+        info: "Custom furniture and decor, Sayajigunj"
+      }
+    ];
+
+    stores.forEach(store => {
+      L.marker([store.lat, store.lng])
+        .addTo(map)
+        .bindPopup(`<b>${store.name}</b><br>${store.info}`);
+    });
+  </script>
+  <script src="new.js"></script>
+</body>
+</html>
